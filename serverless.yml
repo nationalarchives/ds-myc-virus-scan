@@ -1,0 +1,50 @@
+service: clamav-virus-scan
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  
+  ecr:
+    images:
+      clamav-lambda:
+        path: ./
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - 's3:PutObjectTagging'
+            - 's3:GetObject'
+          Resource: "arn:aws:s3:::ds-${sls:stage}-myc-files/*"
+
+custom:
+  source_bucket: 'ds-${sls:stage}-myc-files'           
+
+functions:
+  virusScan:
+    name: ds-${sls:stage}-virus-scan
+    image:
+      name: clamav-lambda
+    memorySize: 2048
+    events:
+      - s3: 
+          bucket: ds-${sls:stage}-myc-files
+          event: s3:ObjectCreated:*
+    timeout: 120
+    vpc:
+        securityGroupIds:
+          - ${ssm:/infrastructure/myc/security-group/id}
+        subnetIds:
+          - ${ssm:/dev/infrastructure/private_subnet_2a_id}
+          - ${ssm:/dev/infrastructure/private_subnet_2b_id}
+    environment:
+        MYC_HOST: ${ssm:/infrastructure/myc/url}
+        MYC_PATH: /scancomplete      
+    tags:
+        Name: ClamAV serverless virus scanner
+        Service: Service used by Manage Your Collections (MYC)
+        CostCentre: 53
+        Terraform: false
+        ApplicationType: nodejs
