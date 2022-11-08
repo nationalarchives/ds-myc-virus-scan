@@ -1,0 +1,47 @@
+service: clamav-virus-scan
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  
+  ecr:
+    images:
+      clamav-lambda:
+        path: ./
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - 's3:PutObjectTagging'
+            - 's3:GetObject'
+          Resource: "arn:aws:s3:::ds-${sls:stage}-myc-files/*"
+
+custom:
+  source_bucket: 'ds-${sls:stage}-myc-files'           
+
+functions:
+  virusScan:
+    name: ds-${sls:stage}-virus-scan
+    image:
+      name: clamav-lambda
+    memorySize: 2048
+    events:
+      - s3: 
+          bucket: ds-${sls:stage}-myc-files
+          event: s3:ObjectCreated:*
+    timeout: 120
+    vpc:
+        securityGroupIds:
+          - ${ssm:/dev/infrastructure/discovery-backend-sg_id}
+        subnetIds:
+          - ${ssm:/dev/infrastructure/private_subnet_2a_id}
+          - ${ssm:/dev/infrastructure/private_subnet_2b_id}
+    environment:
+        MYC_HOST: test-manage-collections.nationalarchives.gov.uk
+        MYC_PATH: /scancomplete      
+    tags:
+        Terraform: false
+        LaunchedBy: GV
