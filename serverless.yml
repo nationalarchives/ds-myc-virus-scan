@@ -35,13 +35,16 @@ functions:
     timeout: 120
     vpc:
         securityGroupIds:
-          - ${ssm:/dev/infrastructure/discovery-backend-sg_id}
+          - ${ssm:/infrastructure/myc/security-group/id}
         subnetIds:
           - ${ssm:/dev/infrastructure/private_subnet_2a_id}
           - ${ssm:/dev/infrastructure/private_subnet_2b_id}
     environment:
-        MYC_HOST: test-manage-collections.nationalarchives.gov.uk
+        MYC_HOST: ${ssm:/infrastructure/myc/url}
         MYC_PATH: /scancomplete      
     tags:
+        Name: ClamAV serverless virus scanner
+        Service: Service used by Manage Your Collections (MYC)
+        CostCentre: 53
         Terraform: false
-        LaunchedBy: GV
+        ApplicationType: nodejs
