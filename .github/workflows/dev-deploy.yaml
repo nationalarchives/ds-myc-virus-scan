@@ -1,4 +1,4 @@
-name: Dev Deploy master branch
+name: Dev Deploy branch
 
 permissions:
   id-token: write
@@ -42,7 +42,7 @@ jobs:
         push: false
         tags: clamav:latest
 
-    - name: serverless deploy
+    - name: Serverless deploy
       uses: serverless/github-action@v3.1
       with:
         args: deploy
