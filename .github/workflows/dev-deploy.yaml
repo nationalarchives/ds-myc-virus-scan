@@ -1,4 +1,4 @@
-name: Dev Deploy master branch
+name: Dev Deploy branch
 
 permissions:
   id-token: write
@@ -11,6 +11,7 @@ jobs:
   deploy:
     name: Deploy serverless virus scan
     runs-on: ubuntu-latest
+    environment: dev    
     strategy:
       matrix:
         node-version: [14.x]
@@ -18,7 +19,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        role-to-assume: ${{ env.AWS_ROLE_ARN }}
         aws-region: eu-west-2
         
     - name: Use Node.js ${{ matrix.node-version }}
@@ -40,7 +41,7 @@ jobs:
         push: false
         tags: clamav:latest
 
-    - name: serverless deploy
+    - name: Serverless deploy
       uses: serverless/github-action@v3.1
       with:
         args: deploy
