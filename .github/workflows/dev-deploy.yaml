@@ -29,8 +29,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-#    - name: Install Serverless Framework
-#      run: npm install -g serverless
+    - name: Install Serverless Framework
+      run: npm install -g serverless
     
     - name: Checkout the latest master		  
       uses: actions/checkout@v3      
@@ -39,8 +39,4 @@ jobs:
       run: docker build -t clamav .
 
     - name: Serverless deploy
-      uses: serverless/github-action@v3.1
-      with:
-        args: deploy
-      env:
-        stage: dev
+      run: serverless deploy --stage dev
