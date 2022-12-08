@@ -44,7 +44,7 @@ functions:
         MYC_PATH: /scancomplete      
     tags:
         Name: 'ClamAV serverless virus scanner'
-        Service: 'Service used by Manage Your Collections (MYC)'
+        Service: 'Service used by Manage Your Collections'
         CostCentre: 53
         Terraform: false
         ApplicationType: nodejs
