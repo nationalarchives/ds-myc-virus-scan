@@ -11,8 +11,7 @@ jobs:
   deploy:
     name: Deploy serverless virus scan
     runs-on: ubuntu-latest
-    env:
-        environment: dev    
+    environment: dev    
     strategy:
       matrix:
         node-version: [14.x]
