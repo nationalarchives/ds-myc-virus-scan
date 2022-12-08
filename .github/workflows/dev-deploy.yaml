@@ -2,7 +2,7 @@ name: Dev Deploy master branch
 
 permissions:
   id-token: write
-  contents: write 
+  contents: read
 
 on:
   workflow_dispatch:
@@ -39,7 +39,7 @@ jobs:
         context: .
         push: false
         tags: clamav      
-	
+
     - name: serverless deploy
       uses: serverless/github-action@v3.1
       with:
