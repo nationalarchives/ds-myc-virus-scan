@@ -39,4 +39,4 @@ jobs:
       run: docker build -t clamav .
 
     - name: Serverless deploy
-      run: serverless deploy --stage dev
+      run: serverless deploy --stage dev --region eu-west-2
