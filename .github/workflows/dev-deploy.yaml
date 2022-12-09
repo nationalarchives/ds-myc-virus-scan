@@ -19,8 +19,8 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::846769538626:role/GithubOIDCProviderIAMRolePermissions-Role-I80RXHT6O1PL
-        aws-region: eu-west-2
+        role-to-assume: ${{ env.AWS_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
         
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -37,4 +37,4 @@ jobs:
       run: docker build -t clamav .
 
     - name: Serverless deploy
-      run: serverless deploy --stage dev --region eu-west-2
+      run: serverless deploy --stage dev --region ${{ env.AWS_REGION }}
