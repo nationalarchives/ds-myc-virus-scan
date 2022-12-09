@@ -12,6 +12,8 @@ jobs:
     name: Deploy serverless virus scan
     runs-on: ubuntu-latest
     environment: dev    
+    env:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
     strategy:
       matrix:
         node-version: [14.x]
