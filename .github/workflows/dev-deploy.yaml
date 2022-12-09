@@ -19,7 +19,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::846769538626:role/IAM_Admin_Role
+        role-to-assume: arn:aws:iam::846769538626:role/GithubOIDCProviderIAMRolePermissions-Role-I80RXHT6O1PL
         aws-region: eu-west-2
         
     - name: Use Node.js ${{ matrix.node-version }}
