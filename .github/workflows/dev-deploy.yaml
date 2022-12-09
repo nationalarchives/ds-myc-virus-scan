@@ -16,6 +16,9 @@ jobs:
       matrix:
         node-version: [14.x]
     steps:
+    - name: Echo
+      run: echo ${{ secrets.AWS_ROLE_ARN }} | echo ${{ secrets.AWS_REGION }}
+      
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
