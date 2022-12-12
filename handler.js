@@ -8,7 +8,7 @@ module.exports.virusScan = async(event, context) => {
 		console.log("Not an S3 event invocation!");
 		return;
 	}
-
+	console.log(event.Records.length);
 	for (const record of event.Records) {
 		if (!record.s3) {
 			console.log("Not an S3 Record!");
@@ -105,6 +105,7 @@ function postVirusScanStatus(scanStatus) {
 	const api_host = process.env.MYC_HOST;
 	const api_path = process.env.MYC_PATH;
 
+	console.log(api_host)
 	const https = require('https');
 
 	const options = {
