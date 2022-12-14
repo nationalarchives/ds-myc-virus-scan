@@ -1,32 +1,28 @@
-const {
-	execSync
-} = require("child_process");
-const {
-	writeFileSync,
-	unlinkSync
-} = require("fs");
+const { execSync } = require("child_process");
+const { writeFileSync, unlinkSync } = require("fs");
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
 
-module.exports.virusScan = async(event, context) => {
-	const fileName = decodeURIComponent(record.s3.object.key.replace(/\+g/, " "));
+module.exports.virusScan = async (event, context) => {
+	try {
+		const fileName = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+g/, " "));
 
-	console.log('Getting the file', fileName, record);
+		console.log('Getting the file', fileName, record);
 
-	// get the file
-	const s3Object = await s3
-		.getObject({
-			Bucket: record.s3.bucket.name,
-			Key: fileName,
-		})
-		.promise();
+		// get the file
+		const s3Object = await s3.getObject({
+				Bucket: event.Records[0].s3.bucket.name,
+				Key: fileName,
+			}).promise();
 
-	console.log('Got the file', fileName);
+		// write file to disk
+		writeFileSync(`/tmp/${fileName}`, s3Object.Body);
 
-	// write file to disk
-	writeFileSync(`/tmp/${fileName}`, s3Object.Body);
-
-	console.log('wrote the file');
+		console.log('wrote the file');
+	} catch (err) {
+		console.log(err);
+		return;
+	}
 
 	try {
 		// scan it
@@ -34,56 +30,56 @@ module.exports.virusScan = async(event, context) => {
 		console.log(result);
 
 		const clean_data = JSON.stringify({
-				'key': fileName,
-				'status': 'clean'
-			});
+			'key': fileName,
+			'status': 'clean'
+		});
 		postVirusScanStatus(clean_data);
 
 		console.log('updated api with status ', clean_data);
 
 		await s3
-		.putObjectTagging({
-			Bucket: record.s3.bucket.name,
-			Key: fileName,
-			Tagging: {
-				TagSet: [{
+			.putObjectTagging({
+				Bucket: record.s3.bucket.name,
+				Key: fileName,
+				Tagging: {
+					TagSet: [{
 						Key: 'av-status',
 						Value: 'clean'
 					}
-				]
-			}
-		})
-		.promise();
+					]
+				}
+			})
+			.promise();
 
 		console.log('updated tag as clean');
 	} catch (err) {
 		console.log('err', err);
 		if (err.status === 1) {
 			const infected_data = JSON.stringify({
-					'key': fileName,
-					'status': 'infected'
-				});
+				'key': fileName,
+				'status': 'infected'
+			});
 			postVirusScanStatus(infected_data);
 			// tag as infected
 			await s3
-			.putObjectTagging({
-				Bucket: record.s3.bucket.name,
-				Key: fileName,
-				Tagging: {
-					TagSet: [{
+				.putObjectTagging({
+					Bucket: record.s3.bucket.name,
+					Key: fileName,
+					Tagging: {
+						TagSet: [{
 							Key: 'av-status',
 							Value: 'infected'
 						}
-					]
-				}
-			})
-			.promise();
+						]
+					}
+				})
+				.promise();
 			console.log('updated tag as infected');
 		} else {
 			const error_data = JSON.stringify({
-					'key': fileName,
-					'status': 'error'
-				});
+				'key': fileName,
+				'status': 'error'
+			});
 			postVirusScanStatus(error_data);
 		}
 	}
@@ -109,13 +105,13 @@ function postVirusScanStatus(scanStatus) {
 	};
 
 	var req = https.request(options, (res) => {
-			console.log('statusCode:', res.statusCode);
-			console.log('headers:', res.headers);
+		console.log('statusCode:', res.statusCode);
+		console.log('headers:', res.headers);
 
-			res.on('data', (d) => {
-				process.stdout.write(d);
-			});
+		res.on('data', (d) => {
+			process.stdout.write(d);
 		});
+	});
 
 	req.on('error', (e) => {
 		console.error(e);
