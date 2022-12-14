@@ -7,7 +7,7 @@ module.exports.virusScan = async (event, context) => {
 	try {
 		const fileName = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+g/, " "));
 
-		console.log('Getting the file', fileName, record);
+		console.log('Getting the file ', fileName, event.Records[0]);
 
 		// get the file
 		const s3Object = await s3.getObject({
