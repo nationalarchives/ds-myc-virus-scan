@@ -88,12 +88,9 @@ module.exports.virusScan = async (event, context) => {
 };
 
 function postVirusScanStatus(scanStatus) {
-	console.log(scanStatus);
-
 	const api_host = process.env.MYC_HOST;
 	const api_path = process.env.MYC_PATH;
 
-	console.log(api_host)
 	const https = require('https');
 
 	const options = {
@@ -101,6 +98,10 @@ function postVirusScanStatus(scanStatus) {
 		path: api_path,
 		port: 443,
 		method: 'POST'
+		headers: {
+		   'Content-Type': 'application/json',
+		   'Content-Length': scanStatus.length
+		 }
 	};
 
 	var req = https.request(options, (res) => {
