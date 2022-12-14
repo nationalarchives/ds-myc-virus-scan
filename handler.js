@@ -4,14 +4,13 @@ const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
 
 module.exports.virusScan = async (event, context) => {
+	const fileName = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+g/, " "));
+	console.log('Getting the file ', fileName, event.Records[0]);
+	const bucketName = event.Records[0].s3.bucket.name;
 	try {
-		const fileName = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+g/, " "));
-
-		console.log('Getting the file ', fileName, event.Records[0]);
-
 		// get the file
 		const s3Object = await s3.getObject({
-				Bucket: event.Records[0].s3.bucket.name,
+				Bucket: bucketName,
 				Key: fileName,
 			}).promise();
 
@@ -39,7 +38,7 @@ module.exports.virusScan = async (event, context) => {
 
 		await s3
 			.putObjectTagging({
-				Bucket: record.s3.bucket.name,
+				Bucket: bucketName,
 				Key: fileName,
 				Tagging: {
 					TagSet: [{
@@ -63,7 +62,7 @@ module.exports.virusScan = async (event, context) => {
 			// tag as infected
 			await s3
 				.putObjectTagging({
-					Bucket: record.s3.bucket.name,
+					Bucket: bucketName,
 					Key: fileName,
 					Tagging: {
 						TagSet: [{
