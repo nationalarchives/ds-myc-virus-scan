@@ -97,7 +97,7 @@ function postVirusScanStatus(scanStatus) {
 		hostname: api_host,
 		path: api_path,
 		port: 443,
-		method: 'POST'
+		method: 'POST',
 		headers: {
 		   'Content-Type': 'application/json',
 		   'Content-Length': scanStatus.length
