@@ -1,4 +1,4 @@
-name: Dev Deploy branch
+name: Serverless deploy
 
 permissions:
   id-token: write
