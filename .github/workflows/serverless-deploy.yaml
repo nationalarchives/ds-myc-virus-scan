@@ -6,17 +6,31 @@ permissions:
 
 on:
   workflow_dispatch:
+    inputs:
+      deploy-environment:
+        type: choice
+        description: Environment
+        required: true
+        default: "dev"
+        options:
+          - dev
+          - staging
+          - live
 
 jobs:
   deploy:
     name: Deploy serverless virus scan
     runs-on: ubuntu-latest
-    environment: dev    
+    
+    environment: github.event.inputs.deploy-environment    
     env:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}            
+      STAGE: github.event.inputs.deploy-environment
+
     strategy:
       matrix:
         node-version: [14.x]
+
     steps:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -39,4 +53,4 @@ jobs:
       run: docker build -t clamav .
 
     - name: Serverless deploy
-      run: serverless deploy --stage dev --region eu-west-2
+      run: serverless deploy --stage ${{ env.STAGE }} --region eu-west-2
