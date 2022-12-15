@@ -22,10 +22,10 @@ jobs:
     name: Deploy serverless virus scan
     runs-on: ubuntu-latest
     
-    environment: github.event.inputs.deploy-environment    
+    environment: ${{ github.event.inputs.deploy-environment }} 
     env:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}            
-      STAGE: github.event.inputs.deploy-environment
+      STAGE: ${{ github.event.inputs.deploy-environment }}
 
     strategy:
       matrix:
