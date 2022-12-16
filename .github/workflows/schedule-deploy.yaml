@@ -1,0 +1,48 @@
+name: Schedule serverless deploy
+
+permissions:
+  id-token: write
+  contents: read
+
+#name: Run daily 7 am
+on:
+  schedule:
+    - cron: "* 7 * * *"
+
+jobs:
+  deploy:
+    name: Deploy serverless virus scan
+    runs-on: ubuntu-latest
+    
+    environment: live
+    env:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}            
+      STAGE: live
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ env.AWS_ROLE_ARN }}
+        aws-region: eu-west-2
+        
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install Serverless Framework
+      run: npm install -g serverless
+    
+    - name: Checkout the latest master		  
+      uses: actions/checkout@v3      
+      
+    - name: Build Docker layer for Lambda
+      run: docker build -t clamav .
+
+    - name: Serverless deploy
+      run: serverless deploy --stage ${{ env.STAGE }} --region eu-west-2
