@@ -21,17 +21,18 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
 
     steps:
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ env.AWS_ROLE_ARN }}
         aws-region: eu-west-2
+        role-session-name: MYC_Virus_Scan_GitAction
         
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -39,7 +40,7 @@ jobs:
       run: npm install -g serverless
     
     - name: Checkout the latest master		  
-      uses: actions/checkout@v3      
+      uses: actions/checkout@v4
       
     - name: Build Docker layer for Lambda
       run: docker build -t clamav .
