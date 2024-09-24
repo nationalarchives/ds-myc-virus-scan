@@ -4,7 +4,7 @@ const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
 
 module.exports.virusScan = async (event, context) => {
-	const fileName = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+g/, " "));
+	const fileName = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " "));
 	console.log('Getting the file ', fileName, event.Records[0]);
 	const bucketName = event.Records[0].s3.bucket.name;
 	try {
