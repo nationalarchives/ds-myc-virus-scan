@@ -1,3 +1,5 @@
+## A service for scanning files for viruses, built on ClamAV, AWS Lambda, and S3 is now replaced with AWS GuardDuty Malware Protection for S3 as a fully managed solution.
+
 # ClamAV serverless virus scanner
 
 ## Introduction
